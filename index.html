@@ -1,1 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿里云小站 - 阿里云盘资源搜索引擎</title>
+    <link href="https://unpkg.com/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-blue: #1E2A3A;
+            --secondary-blue: #2C3E50;
+            --accent-orange: #FF6A00;
+            --light-gray: #F8F9FA;
+            --border-color: #E5E7EB;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--light-gray);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航 */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 6px 0;
+        }
+
+        .navbar .container {
+            max-width: 1054px;
+        }
+
+        .navbar-brand {
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .nav-link {
+            color: var(--secondary-blue);
+            font-weight: 500;
+            padding: 4px 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-orange);
+        }
+
+        /* 主内容区 - 百度风格 */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* Logo区域 - 百度风格 */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4E6EF2 0%, #7C3AED 50%, #4E6EF2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-section p {
+            font-size: 1rem;
+            color: #6B7280;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* 搜索区域 - 现代化风格 */
+        .search-container {
+            background: transparent;
+            padding: 0;
+            width: 100%;
+            max-width: 854px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-wrapper:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .search-input {
+            flex: 1;
+            height: 100%;
+            padding: 0 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            background: transparent;
+            color: #222;
+        }
+
+        .search-input::placeholder {
+            color: #9195A3;
+        }
+
+        .search-input:focus {
+            color: #4E6EF2;
+        }
+
+        .search-btn {
+            width: 120px;
+            height: 42px;
+            margin-right: 4px;
+            background: linear-gradient(135deg, #4E6EF2 0%, #3B5BD9 100%);
+            border: none;
+            border-radius: 21px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #3B5BD9 0%, #2E4BB8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(78, 110, 242, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(78, 110, 242, 0.3);
+        }
+
+        /* 快捷入口 - 小标签按钮风格 */
+        .quick-access {
+            margin-top: 7px;
+            text-align: center;
+        }
+
+        .quick-access-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            background-color: #F5F7FA;
+            border-radius: 6px;
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            margin: 4px;
+        }
+
+        .quick-access-item:hover {
+            background-color: #E8F0FE;
+            color: #4E6EF2;
+            border-color: #4E6EF2;
+        }
+
+        .quick-access-item i {
+            font-size: 0.9rem;
+        }
+
+        /* 公告区域 - 单行滚动 */
+        .notice-section {
+            margin-top: 20px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .notice-wrapper {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            padding: 8px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            height: 40px;
+        }
+
+        .notice-icon {
+            color: #FF6A00;
+            font-size: 1rem;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .notice-content {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .notice-text {
+            display: inline-block;
+            animation: scroll 20s linear infinite;
+            font-size: 0.85rem;
+            color: #4B5563;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .notice-text:hover {
+            animation-play-state: paused;
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: #F8F9FA;
+            padding: 20px 0 16px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-section {
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        .footer-logo {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .footer-description {
+            color: #6B7280;
+            font-size: 0.8125rem;
+            max-width: 500px;
+            margin: 0 auto 12px;
+            line-height: 1.5;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .footer-links li {
+            display: inline-block;
+        }
+
+        .footer-link {
+            color: #6B7280;
+            text-decoration: none;
+            padding: 4px 10px;
+            font-size: 0.8125rem;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-orange);
+            background-color: rgba(255, 106, 0, 0.08);
+        }
+
+        .footer-divider {
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+            margin: 16px auto;
+        }
+
+        .copyright {
+            color: #9CA3AF;
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .copyright a {
+            color: #9CA3AF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .copyright a:hover {
+            color: var(--accent-orange);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .logo-section h1 {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                padding: 0 10px;
+            }
+
+        .search-wrapper {
+            height: 46px;
+        }
+
+        .search-input {
+            font-size: 15px;
+            padding: 0 18px;
+        }
+
+        .search-btn {
+            width: 100px;
+            height: 38px;
+            font-size: 15px;
+            border-radius: 19px;
+        }
+
+            .quick-access {
+                text-align: center;
+            }
+
+            .quick-access-item {
+                font-size: 0.8rem;
+                padding: 5px 12px;
+                margin: 3px;
+            }
+
+            .notice-section {
+                margin-top: 16px;
+            }
+
+            .notice-wrapper {
+                padding: 6px 14px;
+                height: 36px;
+            }
+
+            .notice-icon {
+                font-size: 0.9rem;
+                margin-right: 8px;
+            }
+
+            .notice-text {
+                font-size: 0.8rem;
+            }
+
+            /* 热门资源下载 - 移动端优化 */
+            .hot-downloads {
+                grid-template-columns: 1fr;
+                padding: 0 10px;
+            }
+
+            .hot-download-card {
+                padding: 12px;
+            }
+
+            .hot-download-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .hot-download-icon i {
+                font-size: 1.25rem;
+            }
+
+            .hot-download-title {
+                font-size: 0.875rem;
+            }
+
+            .hot-download-meta {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 微信二维码模态框 */
+        .wechat-qr-modal {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .wechat-qr-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .wechat-qr-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+
+        .wechat-qr-description {
+            color: #6B7280;
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .wechat-qr-image {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border: 2px solid var(--accent-orange);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F8F9FA;
+        }
+
+        .wechat-qr-image i {
+            font-size: 5rem;
+            color: var(--accent-orange);
+        }
+
+        .wechat-qr-tip {
+            color: #9CA3AF;
+            font-size: 0.8125rem;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .wechat-qr-close {
+            margin-top: 24px;
+            padding: 10px 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wechat-qr-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 42, 58, 0.3);
+        }
+
+        /* 热门资源下载 - 横排两列 */
+        .hot-downloads {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 854px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hot-download-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .hot-download-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .hot-download-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4E6EF2 0%, #3B5BD9 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .hot-download-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .hot-download-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hot-download-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hot-download-meta {
+            font-size: 0.8rem;
+            color: #9CA3AF;
+        }
+
+        .hot-download-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #FEF3C7;
+            color: #D97706;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* 横幅广告位 */
+        .ad-banner {
+            margin-top: 20px;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .ad-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .ad-banner-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ad-banner-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <div class="d-flex align-items-center">
+                    <a class="navbar-brand" href="#">
+                        <i class="bi bi-cloud-arrow-up me-2"></i>Alixz
+                    </a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-folder me-1"></i>文件</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-people me-1"></i>分享</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-star me-1"></i>收藏</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center ms-3">
+                        <button class="btn btn-outline-primary rounded-pill px-4 me-2" id="wechatModalBtn">加群</button>
+                        <button class="btn btn-primary rounded-pill px-4" onclick="window.open('https://bbs.alixz.com', '_blank')" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); border: none;">论坛</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- Logo区域 -->
+        <div class="logo-section">
+            <h1>阿里云小站</h1>
+            <p>提供阿里云盘Api接口服务, 安全、高效、开放的智能资源搜索</p>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="搜索 文档、教程、视频..."
+                    id="searchInput"
+                    autocomplete="off"
+                >
+                <button class="search-btn" id="searchBtn">
+                    <i class="bi bi-search"></i> 百度一下
+                </button>
+            </div>
+
+            <!-- 快捷入口 -->
+            <div class="quick-access">
+                <a href="#" class="quick-access-item">
+                    <i class="bi bi-file-earmark-image"></i> 图片
+                </a>
+                <a href="#" class="quick-access-item">
+                    <i class="bi bi-file-earmark-play"></i> 视频
+                </a>
+                <a href="#" class="quick-access-item">
+                    <i class="bi bi-file-earmark-text"></i> 文档
+                </a>
+                <a href="#" class="quick-access-item">
+                    <i class="bi bi-music-note"></i> 音乐
+                </a>
+                <a href="#" class="quick-access-item">
+                    <i class="bi bi-archive"></i> 压缩包
+                </a>
+                <a href="#" class="quick-access-item">
+                    <i class="bi bi-cloud-arrow-up"></i> 上传
+                </a>
+            </div>
+
+            <!-- 公告区域 -->
+            <div class="notice-section">
+                <div class="notice-wrapper">
+                    <i class="bi bi-megaphone notice-icon"></i>
+                    <div class="notice-content">
+                        <div class="notice-text">
+                            🎉 欢迎访问阿里云小站！本站提供阿里云盘资源搜索服务，安全、高效、开放 | 💡 提示：请勿使用本站搜索违法违规内容 | 🚀 新功能：支持批量下载和离线加速
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 热门资源下载 -->
+            <div style="margin-top: 20px; width: 100%;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--primary-blue); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-fire" style="color: #FF6A00;"></i>
+                    热门资源下载
+                </h2>
+                <div class="hot-downloads">
+                    <a href="#" class="hot-download-card">
+                        <div class="hot-download-icon">
+                            <i class="bi bi-film"></i>
+                        </div>
+                        <div class="hot-download-info">
+                            <div class="hot-download-title">2025最新高清电影合集</div>
+                            <div class="hot-download-meta">
+                                <span class="hot-download-badge">热门</span>
+                                <span> · 下载 2.3万次</span>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="hot-download-card">
+                        <div class="hot-download-icon">
+                            <i class="bi bi-music-note-beamed"></i>
+                        </div>
+                        <div class="hot-download-info">
+                            <div class="hot-download-title">无损音乐合集 MP3</div>
+                            <div class="hot-download-meta">
+                                <span class="hot-download-badge">推荐</span>
+                                <span> · 下载 1.8万次</span>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="hot-download-card">
+                        <div class="hot-download-icon">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div class="hot-download-info">
+                            <div class="hot-download-title">编程电子书全集</div>
+                            <div class="hot-download-meta">
+                                <span class="hot-download-badge">精选</span>
+                                <span> · 下载 1.5万次</span>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="hot-download-card">
+                        <div class="hot-download-icon">
+                            <i class="bi bi-play-circle"></i>
+                        </div>
+                        <div class="hot-download-info">
+                            <div class="hot-download-title">视频教程完整版</div>
+                            <div class="hot-download-meta">
+                                <span class="hot-download-badge">新课</span>
+                                <span> · 下载 1.2万次</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 横幅广告位 -->
+            <a href="#" class="ad-banner">
+                <div class="ad-banner-content">
+                    <span class="ad-banner-tag">广告</span>
+                    <span>限时优惠：阿里云盘会员年费低至5折！</span>
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+            </a>
+        </div>
+    </main>
+
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <!-- 主内容区 -->
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <i class="bi bi-cloud-fill me-2"></i>阿里云小站
+                </div>
+                <p class="footer-description">
+                    专注于阿里云盘资源搜索与分享，为您提供便捷的云盘搜索体验。
+                </p>
+                
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">关于我们</a></li>
+                    <li><a href="#" class="footer-link">使用帮助</a></li>
+                    <li><a href="#" class="footer-link">隐私政策</a></li>
+                    <li><a href="#" class="footer-link">服务条款</a></li>
+                    <li><a href="#" class="footer-link">联系我们</a></li>
+                    <li><a href="#" class="footer-link">侵权投诉</a></li>
+                    <li><a href="//beian.miit.gov.cn" class="footer-link"> 鲁ICP备2025144109号-18</a></li>
+                </ul>
+            </div>
+            
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 搜索框交互
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+
+        // 搜索功能
+        function performSearch(keyword) {
+            if (keyword.trim()) {
+                alert('正在搜索: ' + keyword);
+                // 这里可以添加实际的搜索逻辑
+            }
+        }
+
+        // 搜索按钮点击
+        searchBtn.addEventListener('click', function() {
+            performSearch(searchInput.value);
+        });
+
+        // 回车搜索
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch(this.value);
+            }
+        });
+
+        // 微信二维码模态框
+        const wechatModalBtn = document.getElementById('wechatModalBtn');
+        let wechatModal = null;
+
+        function createWechatModal() {
+            // 创建模态框 HTML
+            const modalHTML = `
+                <div class="wechat-qr-modal position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" id="wechatModal" style="z-index: 9999;">
+                    <div class="wechat-qr-content shadow">
+                        <div class="wechat-qr-title">
+                            <i class="bi bi-qr-code-scan me-2"></i>
+                            扫码加群
+                        </div>
+                        <p class="wechat-qr-description">
+                            扫描上方二维码，加入阿里云小站交流群<br>
+                            获取最新资源和技术支持
+                        </p>
+                        <div class="wechat-qr-image">
+                            <i class="bi bi-qr-code-scan"></i>
+                        </div>
+                        <p class="wechat-qr-tip">
+                            <i class="bi bi-lightbulb me-1"></i>
+                            提示：使用微信扫一扫功能识别二维码
+                        </p>
+                        <button class="wechat-qr-close" onclick="closeWechatModal()">
+                            <i class="bi bi-x-lg me-1"></i>
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // 点击背景关闭
+            document.getElementById('wechatModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeWechatModal();
+                }
+            });
+        }
+
+        function closeWechatModal() {
+            const modal = document.getElementById('wechatModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 加群按钮点击
+        wechatModalBtn.addEventListener('click', function() {
+            if (!document.getElementById('wechatModal')) {
+                createWechatModal();
+            }
+        });
+
+        // ESC 键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeWechatModal();
+            }
+        });
+    </script>
+</body>
+</html>
